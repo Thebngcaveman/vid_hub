@@ -2,6 +2,8 @@ import { createError } from "../error.js";
 import User from "../models/User.js";
 
 export const updateById = async (req, res, next) => {
+  console.log("init ---->" + req.user.id);
+  console.log("hehe -----< " + req.params.id);
   if (req.params.id === req.user.id) {
     try {
       const updatedUser = await User.findByIdAndUpdate(
@@ -46,13 +48,13 @@ export const getUser = async (req, res, next) => {
 
 export const subscribe = async (req, res, next) => {
   try {
-    await User.findById(req.user.id, {
+    await User.findByIdAndUpdate(req.user.id, {
       $push: { subscribedUsers: req.params.id },
     });
     await User.findByIdAndUpdate(req.params.id, {
-      $inc: { subscribedUsers: 1 },
+      $inc: { subscribers: 1 },
     });
-    res.status(200).json("Subscription successful");
+    res.status(200).json("Subscription successfull.");
   } catch (err) {
     next(err);
   }
@@ -60,7 +62,7 @@ export const subscribe = async (req, res, next) => {
 
 export const unsubscribe = async (req, res, next) => {
   try {
-    await User.findById(req.user.id, {
+    await User.findByIdAndUpdate(req.user.id, {
       $pull: { subscribedUsers: req.params.id },
     });
     await User.findByIdAndUpdate(req.params.id, {
